@@ -1,0 +1,11 @@
+This repository is probably completely useless for everyone but me, sorry folks.
+
+This is a basic user study for Truth Goggles (http://www.truthgoggl.es) to test its effectiveness as a catalyst for critical thought.
+
+To install:
+
+cp conf.default.php conf.php
+vi conf.php
+mkdir articles
+php install.php
+php datarake.php
