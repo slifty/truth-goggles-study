@@ -28,7 +28,7 @@ class Response extends FactoryObject implements JSONObject {
 	
 	
 	# Caches
-	private $participant
+	private $participant;
 	
 	
 	# FactoryObject Methods
@@ -183,7 +183,7 @@ class Response extends FactoryObject implements JSONObject {
 	
 	
 	# Setters
-	public function setParticipantID($int) { $this->participantID = $str; }
+	public function setParticipantID($int) { $this->participantID = $int; }
 	
 	public function setQuestionID($str) { $this->questionID = $str; }
 	

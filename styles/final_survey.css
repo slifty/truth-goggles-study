@@ -1,0 +1,18 @@
+ul {
+	list-style:none;
+}
+
+ul li {
+	margin-bottom: 40px;
+}
+
+label {
+	font-weight: bold;
+	display: block;
+	margin-bottom: 5px;
+}
+
+textarea {
+	height: 60px;
+	width: 400px;
+}

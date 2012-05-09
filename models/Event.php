@@ -28,7 +28,7 @@ class Event extends FactoryObject implements JSONObject {
 	
 	
 	# Caches
-	private $participant
+	private $participant;
 	
 	
 	# FactoryObject Methods

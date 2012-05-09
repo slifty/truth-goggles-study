@@ -82,7 +82,7 @@ class Claim extends FactoryObject implements JSONObject {
 	
 	public function load($data_array) {
 		parent::load($data_array);
-		$this->type = isset($data_array["content"])?$data_array["content"]:"";
+		$this->content = isset($data_array["content"])?$data_array["content"]:"";
 		$this->dateCreated = isset($data_array["dateCreated"])?$data_array["dateCreated"]:0;
 	}
 	
@@ -160,6 +160,10 @@ class Claim extends FactoryObject implements JSONObject {
 						   FROM claims
 						  WHERE claims.content LIKE ".DBConn::clean($content);
 		return array_pop(Claim::getObjects($query_string));
+	}
+	
+	public static function getAllObjects() {
+		return Claim::getObjects("select claims.id from claims");
 	}
 	
 }

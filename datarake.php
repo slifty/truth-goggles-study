@@ -95,11 +95,16 @@
 		curl_setopt($ch,CURLOPT_POST,count($fields));
 		curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
 		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-		$result = json_decode(curl_exec($ch));
+		$result_json = curl_exec($ch);
+		$result = json_decode($result_json);
 		curl_close($ch);
 		
 		foreach($result->snippets as $snippet) {
 			$claim_content = $snippet->claim->content;
+			
+			// Remove the word "Says" which Politifact loves so much...
+			$claim_content = preg_replace('/^(S|s)ays/',"",$claim_content);
+			
 			if(Claim::getObjectByContent($claim_content) == null) {
 				$claim = new Claim();
 				$claim->setContent($claim_content);
@@ -107,6 +112,16 @@
 			}
 		}
 	}
+	
+	// Add in some dummy claims
+	$claim = new Claim();
+	$claim->setContent('President Barack Obama "added" $6.5 trillion to the national debt in his first term, more than the $6.3 trillion added by the previous 43 presidents combined.');
+	$claim->save();
+
+	$claim = new Claim();
+	$claim->setContent('Wisconsin women "are paid 81 cents to the dollar of a man doing the same job."');
+	$claim->save();
+	
 
 	echo("Rake complete!\n");
 ?>

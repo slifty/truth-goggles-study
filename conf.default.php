@@ -15,6 +15,7 @@
 	$SITE_DOMAIN = "127.0.0.1";
 	
 	// Goggles Settings
-	global $TRUTH_GOGGLES_API;
+	global $TRUTH_GOGGLES_API, $TRUTH_GOGGLES_CLIENT;
 	$TRUTH_GOGGLES_API = "";
+	$TRUTH_GOGGLES_CLIENT = "";
 ?>

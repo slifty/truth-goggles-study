@@ -1,0 +1,64 @@
+* {
+	padding: 0px;
+	margin: 0px;
+}
+
+body {
+	font-family: arial;
+	background: #ccc;
+	font-size: 14px;
+}
+
+#content {
+	width: 800px;
+	margin: 100px auto;
+	background: #ffffff;
+	padding: 20px;
+}
+#skip {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	text-align: center;
+	background: #bbb;
+	border: 1px solid #aaa;
+}
+#next {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	text-align: center;
+	background: #f6f;
+}
+#continue {
+	text-align: center;
+	background: #390;
+	border: 1px solid #4a1;
+	font-weight: bold;
+	color: #000;
+	width: 200px;
+}
+#next a, #skip a, #continue a {
+	text-decoration: none;
+	display: block;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	width: 200px;
+	color: #fff;
+}
+#skip a {
+	text-decoration: none;
+	display: block;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	width: 100px;
+	color: #fff;
+}
+
+p {
+	margin: 20px 0px;
+}
+
+strong {
+	color: #039; 
+}
