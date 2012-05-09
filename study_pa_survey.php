@@ -40,13 +40,13 @@
 				<h1><?PHP echo($claim->getContent()); ?></h1>
 			</div>
 			<div id="question">
-				<h2>What do you think?</h2>
+				<h2>On a truth scale of 1-5, where would you rank this statement?</h2>
 				<ul id="responses">
-					<li><a href="study.php?r=1">True</a></li>
-					<li><a href="study.php?r=2">Mostly True</a></li>
-					<li><a href="study.php?r=3">Half True</a></li>
-					<li><a href="study.php?r=4">Mostly False</a></li>
-					<li><a href="study.php?r=5">False</a></li>
+					<li><a href="study.php?r=1">1 (False)</a></li>
+					<li><a href="study.php?r=2">2</a></li>
+					<li><a href="study.php?r=3">3</a></li>
+					<li><a href="study.php?r=4">4</a></li>
+					<li><a href="study.php?r=5">5 (True)</a></li>
 				</ul>
 			</div>
 		</div>

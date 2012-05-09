@@ -37,7 +37,7 @@
 			<ul>
 				<li>Participation is voluntary</li>
 				<li>You may decline to answer any or all questions</li>
-				<li>This study will take approximately <strong>25 minutes</strong> of your time</li>
+				<li>This study will take approximately <strong>30 minutes</strong> of your time</li>
 				<li>You may stop participating at any point without any adverse consequences</li>
 				<li>Your confidentiality is assured</li>
 			</ul>
