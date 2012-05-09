@@ -53,6 +53,9 @@
 	$mysqli = DBConn::connect();
 	$mysqli->query("delete from articles");
 	$mysqli->query("delete from claims");
+	$mysqli->query("delete from participants");
+	$mysqli->query("delete from events");
+	$mysqli->query("delete from responses");
 
 	// Load in the articles in the articles directory
 	echo("Loading articles\n");
