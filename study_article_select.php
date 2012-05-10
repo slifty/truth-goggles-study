@@ -7,7 +7,7 @@
 	<body>
 		<div id="content">
 			<h1>Interface Selection</h1>
-			<p>For the last two articles you can choose which Truth Goggles interface you prefer.  Please select from the following options:</p>
+			<p>For the <strong>last two</strong> articles you can choose which Truth Goggles interface you prefer.  Please select from the following options:</p>
 			<ul>
 				<li><a href="study.php?q_interface=highlight">Highlight Mode (only highlight)</a></li>
 				<li><a href="study.php?q_interface=goggles">Goggles Mode (highlight + blur)</a></li>
