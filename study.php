@@ -115,7 +115,7 @@
 				$response = new Response();
 				$response->setParticipantID($participant->getItemID());
 				$response->setQuestionID('q_interface');
-				$response->setContent($_POST['q_interface']);
+				$response->setContent($_GET['q_interface']);
 				$response->save();
 			}
 			
