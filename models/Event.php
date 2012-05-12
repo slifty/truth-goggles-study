@@ -197,7 +197,6 @@ class Event extends FactoryObject implements JSONObject {
 						  WHERE events.participant_id = ".DBConn::clean($participantID);
 		return Claim::getObjects($query_string);
 	}
-	
 }
 
 ?>

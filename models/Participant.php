@@ -253,6 +253,9 @@ class Participant extends FactoryObject implements JSONObject {
 	
 	
 	# Static Methods
+	public static function getAllObjects() {
+		return Participant::getObjects("select participants.id from participants");
+	}
 	
 	
 }

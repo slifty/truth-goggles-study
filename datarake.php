@@ -110,6 +110,7 @@
 			
 			if(Claim::getObjectByContent($claim_content) == null) {
 				$claim = new Claim();
+				$claim->setArticleID($article->getItemID());
 				$claim->setContent($claim_content);
 				$claim->save();
 			}

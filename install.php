@@ -73,6 +73,22 @@ switch($version) {
 		echo("Updating app version\n");
 		$mysqli->query("UPDATE appinfo set version ='3';") or print($mysqli->error);
 		
+	case 3:
+		echo("Updating claims table\n");
+		$mysqli->query("ALTER TABLE claims
+					      ADD COLUMN article_id int AFTER id") or print($mysqli->error);
+		
+		echo("Updating app version\n");
+		$mysqli->query("UPDATE appinfo set version ='4';") or print($mysqli->error);
+		
+	case 4:
+		echo("Updating claims table\n");
+		$mysqli->query("ALTER TABLE claims
+					      ADD COLUMN verdict int AFTER content") or print($mysqli->error);
+		
+		echo("Updating app version\n");
+		$mysqli->query("UPDATE appinfo set version ='5';") or print($mysqli->error);
+		
 	default:
 		echo("Finished updating the schema\n");
 }

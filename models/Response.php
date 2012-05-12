@@ -103,13 +103,13 @@ class Response extends FactoryObject implements JSONObject {
 	
 	# JSONObject Methods
 	public function toJSON() {
-		$json = '{
-			"id": '.DBConn::clean($this->getItemID()).',
-			"participant": '.$this->getParticipant()->toJSON().',
-			"questionID": '.DBConn::clean($this->getQuestionID()).',
-			"content": '.DBConn::clean($this->getContent()).',
-			"date_created": '.DBConn::clean($this->getDateCreated()).'
-		}';
+		$json  = '{';
+		$json .= ' "id": '.DBConn::clean($this->getItemID()).',';
+		$json .= ' "participant": '.$this->getParticipant()->toJSON().',';
+		$json .= ' "questionID": '.DBConn::clean($this->getQuestionID()).',';
+		$json .= ' "content": '.DBConn::clean($this->getContent()).',';
+		$json .= ' "date_created": '.DBConn::clean($this->getDateCreated()).'';
+		$json .= '}';
 		return $json;
 	}
 	
@@ -191,6 +191,12 @@ class Response extends FactoryObject implements JSONObject {
 	
 	
 	# Static Methods
+	public static function getObjectsByParticipantID($int) {
+		$query_string = "SELECT responses.id as itemID 
+						   FROM responses
+						  WHERE responses.participant_id = ".DBConn::clean($int);
+		return Response::getObjects($query_string);
+	}
 	
 }
 

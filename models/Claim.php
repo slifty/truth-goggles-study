@@ -20,7 +20,9 @@ class Claim extends FactoryObject implements JSONObject {
 	
 	
 	# Instance Variables
+	private $articleID; // int
 	private $content; // string
+	private $verdict; // int
 	private $dateCreated; //timestamp
 	
 	
@@ -35,7 +37,9 @@ class Claim extends FactoryObject implements JSONObject {
 		if($objectString === FactoryObject::INIT_EMPTY) {
 			$data_array = array();
 			$data_array['itemID'] = 0;
+			$data_array['articleID'] = 0;
 			$data_array['content'] = "";
+			$data_array['verdict'] = 0;
 			$data_array['dateCreated'] = 0;
 			$data_arrays[] = $data_array;
 			return $data_arrays;
@@ -45,7 +49,9 @@ class Claim extends FactoryObject implements JSONObject {
 		if($objectString === FactoryObject::INIT_DEFAULT) {
 			$data_array = array();
 			$data_array['itemID'] = 0;
+			$data_array['articleID'] = 0;
 			$data_array['content'] = "";
+			$data_array['verdict'] = 0;
 			$data_array['dateCreated'] = 0;
 			$data_arrays[] = $data_array;
 			return $data_arrays;
@@ -56,7 +62,9 @@ class Claim extends FactoryObject implements JSONObject {
 		
 		// Load the object data
 		$query_string = "SELECT claims.id AS itemID,
+							   claims.article_id AS articleID,
 							   claims.content AS content,
+							   claims.verdict AS verdict,
 							   unix_timestamp(claims.date_created) as dateCreated
 						  FROM claims
 						 WHERE claims.id IN (".$objectString.")";
@@ -71,7 +79,9 @@ class Claim extends FactoryObject implements JSONObject {
 		while($resultArray = $result->fetch_assoc()) {
 			$data_array = array();
 			$data_array['itemID'] = $resultArray['itemID'];
+			$data_array['articleID'] = $resultArray['articleID'];
 			$data_array['content'] = $resultArray['content'];
+			$data_array['verdict'] = $resultArray['verdict'];
 			$data_array['dateCreated'] = $resultArray['dateCreated'];
 			$data_arrays[] = $data_array;
 		}
@@ -82,18 +92,22 @@ class Claim extends FactoryObject implements JSONObject {
 	
 	public function load($data_array) {
 		parent::load($data_array);
+		$this->articleID = isset($data_array["articleID"])?$data_array["articleID"]:0;
 		$this->content = isset($data_array["content"])?$data_array["content"]:"";
+		$this->verdict = isset($data_array["verdict"])?$data_array["verdict"]:0;
 		$this->dateCreated = isset($data_array["dateCreated"])?$data_array["dateCreated"]:0;
 	}
 	
 	
 	# JSONObject Methods
 	public function toJSON() {
-		$json = '{
-			"id": '.DBConn::clean($this->getItemID()).',
-			"content": '.DBConn::clean($this->getContent()).',
-			"date_created": '.DBConn::clean($this->getDateCreated()).'
-		}';
+		$json = '{';
+		$json .= ' "id": '.DBConn::clean($this->getItemID()).',';
+		$json .= ' "article_id": '.DBConn::clean($this->getArticleID()).',';
+		$json .= ' "content": '.DBConn::clean($this->getContent()).',';
+		$json .= ' "verdict": '.DBConn::clean($this->getVerdict()).',';
+		$json .= ' "date_created": '.DBConn::clean($this->getDateCreated()).'';
+		$json .= '}';
 		return $json;
 	}
 	
@@ -111,7 +125,9 @@ class Claim extends FactoryObject implements JSONObject {
 		if($this->isUpdate()) {
 			// Update an existing record
 			$query_string = "UPDATE claims
-							   SET claims.content = ".DBConn::clean($this->getContent())."
+							   SET claims.article_id = ".DBConn::clean($this->getArticleID()).",
+								   claims.content = ".DBConn::clean($this->getContent()).",
+								   claims.verdict = ".DBConn::clean($this->getVerdict())."
 							 WHERE claims.id = ".DBConn::clean($this->getItemID());
 							
 			$mysqli->query($query_string) or print($mysqli->error);
@@ -119,10 +135,14 @@ class Claim extends FactoryObject implements JSONObject {
 			// Create a new record
 			$query_string = "INSERT INTO claims
 								   (claims.id,
+									claims.article_id,
 									claims.content,
+									claims.verdict,
 									claims.date_created)
 							VALUES (0,
+									".DBConn::clean($this->getArticleID()).",
 									".DBConn::clean($this->getContent()).",
+									".DBConn::clean($this->getVerdict()).",
 									NOW())";
 			
 			$mysqli->query($query_string) or print($mysqli->error);
@@ -145,13 +165,21 @@ class Claim extends FactoryObject implements JSONObject {
 	
 	
 	# Getters
+	public function getArticleID() { return $this->articleID; }
+	
 	public function getContent() { return $this->content; }
+	
+	public function getVerdict() { return $this->verdict; }
 
 	public function getDateCreated() { return $this->dateCreated; }
 	
 	
 	# Setters
+	public function setArticleID($int) { $this->articleID = $int; }
+	
 	public function setContent($str) { $this->content = $str; }
+	
+	public function setVerdict($int) { $this->verdict = $int; }
 	
 	
 	# Static Methods
