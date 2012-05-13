@@ -17,13 +17,17 @@
 	
 	?>
 {
+ "total": <?PHP echo(sizeof($participants)); ?>,
+ "omitted": <?PHP echo(sizeof($participant_blacklist)); ?>,
  "participants": [
 	<?PHP
+	$participant_responses = array();
 	$participant_counter = 0;
 	foreach($participants as $participant) {
-		echo((++$participant_counter>1)?",":"");
 		if(in_array($participant->getItemID(), $participant_blacklist))
 			continue;
+			
+		echo((++$participant_counter>1)?",":"");
 		
 		$events = Event::getObjectsByParticipantID($participant->getItemID());
 		$treatment_order = explode(',', $participant->getTreatmentOrder());
@@ -37,6 +41,8 @@
 		foreach(Response::getObjectsByParticipantID($participant->getItemID()) as $response)
 			$responses[$response->getQuestionID()] = $response;
 		
+		$participant_responses[$participant->getItemID()] = $responses;
+		
 		foreach($claim_objects as $claim) {
 			$claims[$claim->getItemID()] = array(
 				"claim" => $claim,
@@ -47,12 +53,12 @@
 		}
 		
 		foreach($claim_order_1 as $x => $claim_id)
-			$claims[$claim_id]['response_1'] = isset($responses['2_'.($x + 1)])?$responses['2_'.($x + 1)]:"";
+			$claims[$claim_id]['response_1'] = isset($responses['2_'.($x + 1)])?$responses['2_'.($x + 1)]->getContent():"";
 		
-		foreach($claim_order_1 as $x => $claim_id)
-			$claims[$claim_id]['response_2'] = isset($responses['6_'.($x + 1)])?$responses['6_'.($x + 1)]:"";
+		foreach($claim_order_2 as $x => $claim_id)
+			$claims[$claim_id]['response_2'] = isset($responses['6_'.($x + 1)])?$responses['6_'.($x + 1)]->getContent():"";
 		
-		foreach($claims as $x => $claim) {
+		foreach($claims as $claim_id => $claim) {
 			if($claim["claim"]->getArticleID() != 0) {
 				$article = $articles[$claim["claim"]->getArticleID()];
 				$claims[$claim_id]['treatment'] = $treatment_order[array_search($article->getItemID(),$article_order)];
@@ -65,29 +71,31 @@
 			if($event->getType() == "more")
 				$more_count++;
 		?>
-{
- "participant_id": <?PHP echo(DBConn::clean($participant->getItemID())); ?>,
- "stage": <?PHP echo(DBConn::clean($participant->getStage())); ?>,
- "stage_progress": <?PHP echo(DBConn::clean($participant->getStageProgress())); ?>,
- "claims": [
+  {
+   "participant_id": <?PHP echo(DBConn::clean($participant->getItemID())); ?>,
+   "ideology": <?PHP echo(DBConn::clean(isset($participant_responses[$participant->getItemID()]["q_politics"])?$participant_responses[$participant->getItemID()]["q_politics"]->getContent():0));?>,
+   "stage": <?PHP echo(DBConn::clean($participant->getStage())); ?>,
+   "stage_progress": <?PHP echo(DBConn::clean($participant->getStageProgress())); ?>,
+   "claims": [
 <?PHP
 					$claim_counter = 0;
 					foreach($claims as $claim) {
 						echo((++$claim_counter>1)?",":"");
 						?>
-{
- "claim":<?PHP echo($claim["claim"]->toJSON()); ?>,
- "response_1":<?PHP echo(DBConn::clean($claim["response_1"])); ?>,
- "response_2":<?PHP echo(DBConn::clean($claim["response_2"])); ?>,
- "treatment":<?PHP echo(DBConn::clean($claim["treatment"])); ?>
-}
+    {
+     "claim":<?PHP echo($claim["claim"]->toJSON()); ?>,
+     "response_1":<?PHP echo(DBConn::clean($claim["response_1"])); ?>,
+     "response_2":<?PHP echo(DBConn::clean($claim["response_2"])); ?>,
+     "treatment":<?PHP echo(DBConn::clean($claim["treatment"])); ?>
+    }
 <?PHP
 					}
 				?>
- ],
- "more_count":<?PHP echo($more_count);?>
-}
+   ],
+   "more_count":<?PHP echo(DBConn::clean($more_count));?>
+  }
 		<?PHP
 	}
 	?>
-]}
+ ]
+}

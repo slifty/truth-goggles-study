@@ -101,13 +101,13 @@ class Claim extends FactoryObject implements JSONObject {
 	
 	# JSONObject Methods
 	public function toJSON() {
-		$json = '{';
-		$json .= ' "id": '.DBConn::clean($this->getItemID()).',';
-		$json .= ' "article_id": '.DBConn::clean($this->getArticleID()).',';
-		$json .= ' "content": '.DBConn::clean($this->getContent()).',';
-		$json .= ' "verdict": '.DBConn::clean($this->getVerdict()).',';
-		$json .= ' "date_created": '.DBConn::clean($this->getDateCreated()).'';
-		$json .= '}';
+		$json = '{
+					"id": '.DBConn::clean($this->getItemID()).',
+					"article_id": '.DBConn::clean($this->getArticleID()).',
+					"content": '.DBConn::clean($this->getContent()).',
+					"verdict": '.DBConn::clean($this->getVerdict()).',
+					"date_created": '.DBConn::clean($this->getDateCreated()).'
+				}';
 		return $json;
 	}
 	

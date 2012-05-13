@@ -94,22 +94,22 @@ class Response extends FactoryObject implements JSONObject {
 	
 	public function load($data_array) {
 		parent::load($data_array);
-		$this->type = isset($data_array["participantID"])?$data_array["participantID"]:0;
-		$this->type = isset($data_array["questionID"])?$data_array["questionID"]:"";
-		$this->type = isset($data_array["content"])?$data_array["content"]:"";
+		$this->participantID = isset($data_array["participantID"])?$data_array["participantID"]:0;
+		$this->questionID = isset($data_array["questionID"])?$data_array["questionID"]:"";
+		$this->content = isset($data_array["content"])?$data_array["content"]:"";
 		$this->dateCreated = isset($data_array["dateCreated"])?$data_array["dateCreated"]:0;
 	}
 	
 	
 	# JSONObject Methods
 	public function toJSON() {
-		$json  = '{';
-		$json .= ' "id": '.DBConn::clean($this->getItemID()).',';
-		$json .= ' "participant": '.$this->getParticipant()->toJSON().',';
-		$json .= ' "questionID": '.DBConn::clean($this->getQuestionID()).',';
-		$json .= ' "content": '.DBConn::clean($this->getContent()).',';
-		$json .= ' "date_created": '.DBConn::clean($this->getDateCreated()).'';
-		$json .= '}';
+		$json  = '{
+			"id": '.DBConn::clean($this->getItemID()).',
+			"participant": '.$this->getParticipant()->toJSON().',
+			"question_id": '.DBConn::clean($this->getQuestionID()).',
+			"content": '.DBConn::clean($this->getContent()).',
+			"date_created": '.DBConn::clean($this->getDateCreated()).'
+		}';
 		return $json;
 	}
 	
