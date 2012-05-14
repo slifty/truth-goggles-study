@@ -97,31 +97,35 @@
 										total: 0,
 										max_distance: 0,
 										pre_total_distance: 0, // the total number of units deviated
+										pre_over_max: 0, 
 										pre_over_count: 0, 
 										pre_over_distance: 0,
 										pre_over_max_distance: 0,
+										pre_under_max: 0, 
 										pre_under_count: 0, 
 										pre_under_distance: 0,
 										pre_under_max_distance: 0,
 										pre_exact_count: 0, 
 										pre_over_percent: function(){return Math.round(this.pre_over_count / this.total * 100);}, 
-										pre_over_average_distance: function(){return Math.round(this.pre_over_distance / this.pre_over_count * 100) / 100;}, 
+										pre_over_saturation: function(){return Math.round(this.pre_over_count / this.pre_over_max * 100);}, 
 										pre_under_percent: function(){return Math.round(this.pre_under_count / this.total * 100);}, 
-										pre_under_average_distance: function(){return Math.round(this.pre_under_distance / this.pre_under_count * 100) / 100;}, 
+										pre_under_saturation: function(){return Math.round(this.pre_under_count / this.pre_under_max * 100);}, 
 										pre_exact_percent: function(){return Math.round(this.pre_exact_count / this.total * 100);}, 
 										pre_accuracy_ratio: function(){return Math.round(this.pre_total_distance / this.max_distance * 100) / 100;},
 										post_total_distance: 0,
+										post_over_max: 0,
 										post_over_count: 0,
 										post_over_distance: 0,
 										post_over_max_distance: 0,
+										post_under_max: 0,
 										post_under_count: 0,
 										post_under_distance: 0,
 										post_under_max_distance: 0,
 										post_exact_count: 0,
 										post_over_percent: function(){return Math.round(this.post_over_count / this.total * 100);}, 
-										post_over_average_distance: function(){return Math.round(this.post_over_distance / this.post_over_count * 100) / 100;}, 
+										post_over_saturation: function(){return Math.round(this.post_over_count / this.post_over_max * 100);}, 
 										post_under_percent: function(){return Math.round(this.post_under_count / this.total * 100);}, 
-										post_under_average_distance: function(){return Math.round(this.post_under_distance / this.post_under_count * 100) / 100;}, 
+										post_under_saturation: function(){return Math.round(this.post_under_count / this.post_under_max * 100);}, 
 										post_exact_percent: function(){return Math.round(this.post_exact_count / this.total * 100);}, 
 										post_accuracy_ratio: function(){return Math.round(this.post_total_distance / this.max_distance * 100) / 100;},
 										max_drift: 0, // the most a result could drift
@@ -153,7 +157,9 @@
 								treatments[treatment].max_distance += Math.max(Math.abs(real - 5), Math.abs(real - 1));
 								treatments[treatment].pre_total_distance += Math.abs(pre - real);
 								treatments[treatment].pre_over_count += (pre > real)?1:0;
+								treatments[treatment].pre_over_max += (real < 5)?1:0;
 								treatments[treatment].pre_under_count += (pre < real)?1:0;
+								treatments[treatment].pre_under_max += (real > 1)?1:0;
 								treatments[treatment].pre_exact_count += (pre == real)?1:0;
 								if(pre > real) {
 									treatments[treatment].pre_over_distance += pre - real;
@@ -165,7 +171,9 @@
 								}
 								treatments[treatment].post_total_distance += Math.abs(post - real);
 								treatments[treatment].post_over_count += (post > real)?1:0;
+								treatments[treatment].post_over_max += (real < 5)?1:0;
 								treatments[treatment].post_under_count += (post < real)?1:0;
+								treatments[treatment].post_under_max += (real > 1)?1:0;
 								treatments[treatment].post_exact_count += (post == real)?1:0;
 								if(post > real) {
 									treatments[treatment].post_over_distance += post - real;
@@ -229,24 +237,28 @@
 						$(".<?PHP echo($prefix); ?>_max_distance").text(treatments["<?PHP echo($prefix); ?>"].max_distance);
 						$(".<?PHP echo($prefix); ?>_pre_accuracy_ratio").text(treatments["<?PHP echo($prefix); ?>"].pre_accuracy_ratio());
 						$(".<?PHP echo($prefix); ?>_pre_over").text(treatments["<?PHP echo($prefix); ?>"].pre_over_count);
+						$(".<?PHP echo($prefix); ?>_pre_over_max").text(treatments["<?PHP echo($prefix); ?>"].pre_over_max);
 						$(".<?PHP echo($prefix); ?>_pre_over_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_over_distance);
 						$(".<?PHP echo($prefix); ?>_pre_over_max_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_over_max_distance);
-						$(".<?PHP echo($prefix); ?>_pre_over_average_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_over_average_distance());
+						$(".<?PHP echo($prefix); ?>_pre_over_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_over_saturation());
 						$(".<?PHP echo($prefix); ?>_pre_under").text(treatments["<?PHP echo($prefix); ?>"].pre_under_count);
+						$(".<?PHP echo($prefix); ?>_pre_under_max").text(treatments["<?PHP echo($prefix); ?>"].pre_under_max);
 						$(".<?PHP echo($prefix); ?>_pre_under_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_under_distance);
 						$(".<?PHP echo($prefix); ?>_pre_under_max_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_under_max_distance);
-						$(".<?PHP echo($prefix); ?>_pre_under_average_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_under_average_distance());
+						$(".<?PHP echo($prefix); ?>_pre_under_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_under_saturation());
 						$(".<?PHP echo($prefix); ?>_pre_exact").text(treatments["<?PHP echo($prefix); ?>"].pre_exact_count);
 						$(".<?PHP echo($prefix); ?>_post_distance").text(treatments["<?PHP echo($prefix); ?>"].post_total_distance);
 						$(".<?PHP echo($prefix); ?>_post_accuracy_ratio").text(treatments["<?PHP echo($prefix); ?>"].post_accuracy_ratio());
 						$(".<?PHP echo($prefix); ?>_post_over").text(treatments["<?PHP echo($prefix); ?>"].post_over_count);
+						$(".<?PHP echo($prefix); ?>_post_over_max").text(treatments["<?PHP echo($prefix); ?>"].post_over_max);
 						$(".<?PHP echo($prefix); ?>_post_over_distance").text(treatments["<?PHP echo($prefix); ?>"].post_over_distance);
 						$(".<?PHP echo($prefix); ?>_post_over_max_distance").text(treatments["<?PHP echo($prefix); ?>"].post_over_max_distance);
-						$(".<?PHP echo($prefix); ?>_post_over_average_distance").text(treatments["<?PHP echo($prefix); ?>"].post_over_average_distance());
+						$(".<?PHP echo($prefix); ?>_post_over_saturation").text(treatments["<?PHP echo($prefix); ?>"].post_over_saturation());
 						$(".<?PHP echo($prefix); ?>_post_under").text(treatments["<?PHP echo($prefix); ?>"].post_under_count);
+						$(".<?PHP echo($prefix); ?>_post_under_max").text(treatments["<?PHP echo($prefix); ?>"].post_under_max);
 						$(".<?PHP echo($prefix); ?>_post_under_distance").text(treatments["<?PHP echo($prefix); ?>"].post_under_distance);
 						$(".<?PHP echo($prefix); ?>_post_under_max_distance").text(treatments["<?PHP echo($prefix); ?>"].post_under_max_distance);
-						$(".<?PHP echo($prefix); ?>_post_under_average_distance").text(treatments["<?PHP echo($prefix); ?>"].post_under_average_distance());
+						$(".<?PHP echo($prefix); ?>_post_under_saturation").text(treatments["<?PHP echo($prefix); ?>"].post_under_saturation());
 						$(".<?PHP echo($prefix); ?>_post_exact").text(treatments["<?PHP echo($prefix); ?>"].post_exact_count);
 						$(".<?PHP echo($prefix); ?>_pre_over_percent").text(treatments["<?PHP echo($prefix); ?>"].pre_over_percent());
 						$(".<?PHP echo($prefix); ?>_pre_under_percent").text(treatments["<?PHP echo($prefix); ?>"].pre_under_percent());
@@ -318,29 +330,29 @@
 				<h5>Pre-treatment</h5>
 				<ul>
 					<li>
-						<label>Accuracy:</label>
+						<label>Inaccuracy:</label>
 						<span class="<?PHP echo($prefix); ?>_pre_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_max_distance" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_pre_accuracy_ratio" class="result"></span>)
 					</li>
-					<li>
+					<li class="useless">
 						<label>Over:</label>
 						<span class="<?PHP echo($prefix); ?>_pre_over" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_pre_over_percent" class="result"></span>%)
 					</li>
 					<li>
-						<label>Over Average:</label>
-						<span class="<?PHP echo($prefix); ?>_pre_over_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_pre_over" class="result"></span>
-						(<span class="<?PHP echo($prefix); ?>_pre_over_average_distance" class="result"></span>)
+						<label>Over Saturation:</label>
+						<span class="<?PHP echo($prefix); ?>_pre_over" class="result"></span> / <span class="<?PHP echo($prefix); ?>_pre_over_max" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_pre_over_saturation" class="result"></span>%)
 					</li>
-					<li>
+					<li class="useless">
 						<label>Under:</label>
 						<span class="<?PHP echo($prefix); ?>_pre_under" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_pre_under_percent" class="result"></span>%)
 					</li>
 					<li>
-						<label>Under Average:</label>
-						<span class="<?PHP echo($prefix); ?>_pre_under_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_pre_under" class="result"></span>
-						(<span class="<?PHP echo($prefix); ?>_pre_under_average_distance" class="result"></span>)
+						<label>Under Saturation:</label>
+						<span class="<?PHP echo($prefix); ?>_pre_under" class="result"></span> / <span class="<?PHP echo($prefix); ?>_pre_under_max" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_pre_under_saturation" class="result"></span>%)
 					</li>
 					<li>
 						<label>Exact:</label>
@@ -351,28 +363,28 @@
 				<h5>Post-treatment</h5>
 				<ul>
 					<li>
-						<label>Accuracy:</label>
+						<label>Inaccuracy:</label>
 						<span class="<?PHP echo($prefix); ?>_post_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_max_distance" class="result"></span> (<span class="<?PHP echo($prefix); ?>_post_accuracy_ratio" class="result"></span>)
 					</li>
-					<li>
+					<li class="useless">
 						<label>Over:</label>
 						<span class="<?PHP echo($prefix); ?>_post_over" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_post_over_percent" class="result"></span>%)
 					</li>
 					<li>
-						<label>Over Average:</label>
-						<span class="<?PHP echo($prefix); ?>_post_over_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_over" class="result"></span>
-						(<span class="<?PHP echo($prefix); ?>_post_over_average_distance" class="result"></span>)
+						<label>Over Saturation:</label>
+						<span class="<?PHP echo($prefix); ?>_post_over" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_over_max" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_post_over_saturation" class="result"></span>%)
 					</li>
-					<li>
+					<li class="useless">
 						<label>Under:</label>
 						<span class="<?PHP echo($prefix); ?>_post_under" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_post_under_percent" class="result"></span>%)
 					</li>
 					<li>
-						<label>Under Average:</label>
-						<span class="<?PHP echo($prefix); ?>_post_under_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_under" class="result"></span>
-						(<span class="<?PHP echo($prefix); ?>_post_under_average_distance" class="result"></span>)
+						<label>Under Saturation:</label>
+						<span class="<?PHP echo($prefix); ?>_post_under" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_under_max" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_post_under_saturation" class="result"></span>%)
 					</li>
 					<li>
 						<label>Exact:</label>
@@ -387,50 +399,50 @@
 						<span class="<?PHP echo($prefix); ?>_perfect_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_perfect_drift_percent" class="result"></span>%)
 					</li>
-					<li>
-						<label>Good:</label>
+					<li class="useless">
+						<label>Intended:</label>
 						<span class="<?PHP echo($prefix); ?>_good_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_good_drift_percent" class="result"></span>%)
 					</li>
 					<li>
-						<label>Good Saturation:</label>
+						<label>Intended Saturation:</label>
 						<span class="<?PHP echo($prefix); ?>_good_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_good_drift_possible" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_good_drift_ratio" class="result"></span>%)
 					</li>
-					<li>
-						<label>Over Flops:</label>
-						<span class="<?PHP echo($prefix); ?>_over_flops" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
-						(<span class="<?PHP echo($prefix); ?>_over_flop_percent" class="result"></span>%)
-					</li>
-					<li>
-						<label>Under Flops:</label>
-						<span class="<?PHP echo($prefix); ?>_under_flops" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
-						(<span class="<?PHP echo($prefix); ?>_under_flop_percent" class="result"></span>%)
-					</li>
-					<li>
-						<label>Bad:</label>
+					<li class="useless">
+						<label>Backfire:</label>
 						<span class="<?PHP echo($prefix); ?>_bad_drift" class="result"></span>/ <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_bad_drift_percent" class="result"></span>%)
 					</li>
 					<li>
-						<label>Bad Saturation:</label>
+						<label>Backfire Saturation:</label>
 						<span class="<?PHP echo($prefix); ?>_bad_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_bad_drift_possible" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_bad_drift_ratio" class="result"></span>%)
 					</li>
-					<li>
+					<li class="useless">
 						<label>Neutral:</label>
 						<span class="<?PHP echo($prefix); ?>_neutral_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_neutral_drift_percent" class="result"></span>%)
 					</li>
 					<li>
-						<label>Neutral Good:</label>
+						<label>Neutral (Exact):</label>
 						<span class="<?PHP echo($prefix); ?>_neutral_drift_good" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_neutral_drift_good_percent" class="result"></span>%)
 					</li>
 					<li>
-						<label>Neutral Bad:</label>
+						<label>Neutral (Off):</label>
 						<span class="<?PHP echo($prefix); ?>_neutral_drift_bad" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_neutral_drift_bad_percent" class="result"></span>%)
+					</li>
+					<li>
+						<label>Positive Overcomp:</label>
+						<span class="<?PHP echo($prefix); ?>_over_flops" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_over_flop_percent" class="result"></span>%)
+					</li>
+					<li>
+						<label>Negative Overcomp:</label>
+						<span class="<?PHP echo($prefix); ?>_under_flops" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_under_flop_percent" class="result"></span>%)
 					</li>
 				</ul>
 			</div>

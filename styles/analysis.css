@@ -32,7 +32,7 @@ ul {
 	min-height: 100px;
 }
 ul li {
-	margin: 5px;
+	margin: 10px;
 	width: 320px;
 }
 ul li a {
@@ -51,15 +51,19 @@ ul li label {
 	color: #444444;
 	float: left;
 	display: block;
-	width: 120px;
+	width: 180px;
 	clear: left;
+}
+
+ul li.useless {
+	display: none;
 }
 
 
 ul.wide li label {
 	font-weight: bold;
 	color: #444444;
-	width: 200px;
+	width: 180px;
 }
 
 span.result {
