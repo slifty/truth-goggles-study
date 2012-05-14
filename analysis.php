@@ -111,7 +111,9 @@
 										pre_under_percent: function(){return Math.round(this.pre_under_count / this.total * 100);}, 
 										pre_under_saturation: function(){return Math.round(this.pre_under_count / this.pre_under_max * 100);}, 
 										pre_exact_percent: function(){return Math.round(this.pre_exact_count / this.total * 100);}, 
-										pre_accuracy_ratio: function(){return Math.round(this.pre_total_distance / this.max_distance * 100) / 100;},
+										pre_inaccuracy_saturation: function(){return Math.round(this.pre_total_distance / this.max_distance * 100);},
+										pre_over_bias_saturation: function(){return Math.round(this.pre_over_distance / this.pre_over_max_distance * 100);},
+										pre_under_bias_saturation: function(){return Math.round(this.pre_under_distance / this.pre_under_max_distance * 100);},
 										post_total_distance: 0,
 										post_over_max: 0,
 										post_over_count: 0,
@@ -127,7 +129,9 @@
 										post_under_percent: function(){return Math.round(this.post_under_count / this.total * 100);}, 
 										post_under_saturation: function(){return Math.round(this.post_under_count / this.post_under_max * 100);}, 
 										post_exact_percent: function(){return Math.round(this.post_exact_count / this.total * 100);}, 
-										post_accuracy_ratio: function(){return Math.round(this.post_total_distance / this.max_distance * 100) / 100;},
+										post_inaccuracy_saturation: function(){return Math.round(this.post_total_distance / this.max_distance * 100);},
+										post_over_bias_saturation: function(){return Math.round(this.post_over_distance / this.post_over_max_distance * 100);},
+										post_under_bias_saturation: function(){return Math.round(this.post_under_distance / this.post_under_max_distance * 100);},
 										max_drift: 0, // the most a result could drift
 										total_drift: 0,
 										perfect_drift: 0,
@@ -235,7 +239,9 @@
 						?>
 						$(".<?PHP echo($prefix); ?>_pre_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_total_distance);
 						$(".<?PHP echo($prefix); ?>_max_distance").text(treatments["<?PHP echo($prefix); ?>"].max_distance);
-						$(".<?PHP echo($prefix); ?>_pre_accuracy_ratio").text(treatments["<?PHP echo($prefix); ?>"].pre_accuracy_ratio());
+						$(".<?PHP echo($prefix); ?>_pre_inaccuracy_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_inaccuracy_saturation());
+						$(".<?PHP echo($prefix); ?>_pre_over_bias_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_over_bias_saturation());
+						$(".<?PHP echo($prefix); ?>_pre_under_bias_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_under_bias_saturation());
 						$(".<?PHP echo($prefix); ?>_pre_over").text(treatments["<?PHP echo($prefix); ?>"].pre_over_count);
 						$(".<?PHP echo($prefix); ?>_pre_over_max").text(treatments["<?PHP echo($prefix); ?>"].pre_over_max);
 						$(".<?PHP echo($prefix); ?>_pre_over_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_over_distance);
@@ -248,7 +254,9 @@
 						$(".<?PHP echo($prefix); ?>_pre_under_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_under_saturation());
 						$(".<?PHP echo($prefix); ?>_pre_exact").text(treatments["<?PHP echo($prefix); ?>"].pre_exact_count);
 						$(".<?PHP echo($prefix); ?>_post_distance").text(treatments["<?PHP echo($prefix); ?>"].post_total_distance);
-						$(".<?PHP echo($prefix); ?>_post_accuracy_ratio").text(treatments["<?PHP echo($prefix); ?>"].post_accuracy_ratio());
+						$(".<?PHP echo($prefix); ?>_post_inaccuracy_saturation").text(treatments["<?PHP echo($prefix); ?>"].post_inaccuracy_saturation());
+						$(".<?PHP echo($prefix); ?>_post_over_bias_saturation").text(treatments["<?PHP echo($prefix); ?>"].post_over_bias_saturation());
+						$(".<?PHP echo($prefix); ?>_post_under_bias_saturation").text(treatments["<?PHP echo($prefix); ?>"].post_under_bias_saturation());
 						$(".<?PHP echo($prefix); ?>_post_over").text(treatments["<?PHP echo($prefix); ?>"].post_over_count);
 						$(".<?PHP echo($prefix); ?>_post_over_max").text(treatments["<?PHP echo($prefix); ?>"].post_over_max);
 						$(".<?PHP echo($prefix); ?>_post_over_distance").text(treatments["<?PHP echo($prefix); ?>"].post_over_distance);
@@ -330,9 +338,9 @@
 				<h5>Pre-treatment</h5>
 				<ul>
 					<li>
-						<label>Inaccuracy:</label>
+						<label>Inaccuracy Saturation:</label>
 						<span class="<?PHP echo($prefix); ?>_pre_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_max_distance" class="result"></span>
-						(<span class="<?PHP echo($prefix); ?>_pre_accuracy_ratio" class="result"></span>)
+						(<span class="<?PHP echo($prefix); ?>_pre_inaccuracy_saturation" class="result"></span>%)
 					</li>
 					<li class="useless">
 						<label>Over:</label>
@@ -343,6 +351,11 @@
 						<label>Over Saturation:</label>
 						<span class="<?PHP echo($prefix); ?>_pre_over" class="result"></span> / <span class="<?PHP echo($prefix); ?>_pre_over_max" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_pre_over_saturation" class="result"></span>%)
+					</li>
+					<li>
+						<label>Bias Saturation (Over):</label>
+						<span class="<?PHP echo($prefix); ?>_pre_over_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_pre_over_max_distance" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_pre_over_bias_saturation" class="result"></span>%)
 					</li>
 					<li class="useless">
 						<label>Under:</label>
@@ -355,6 +368,11 @@
 						(<span class="<?PHP echo($prefix); ?>_pre_under_saturation" class="result"></span>%)
 					</li>
 					<li>
+						<label>Bias Saturation (Under):</label>
+						<span class="<?PHP echo($prefix); ?>_pre_under_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_pre_under_max_distance" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_pre_under_bias_saturation" class="result"></span>%)
+					</li>
+					<li>
 						<label>Exact:</label>
 						<span class="<?PHP echo($prefix); ?>_pre_exact" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_pre_exact_percent" class="result"></span>%)
@@ -363,8 +381,9 @@
 				<h5>Post-treatment</h5>
 				<ul>
 					<li>
-						<label>Inaccuracy:</label>
-						<span class="<?PHP echo($prefix); ?>_post_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_max_distance" class="result"></span> (<span class="<?PHP echo($prefix); ?>_post_accuracy_ratio" class="result"></span>)
+						<label>Inaccuracy Saturation:</label>
+						<span class="<?PHP echo($prefix); ?>_post_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_max_distance" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_post_inaccuracy_saturation" class="result"></span>%)
 					</li>
 					<li class="useless">
 						<label>Over:</label>
@@ -376,6 +395,11 @@
 						<span class="<?PHP echo($prefix); ?>_post_over" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_over_max" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_post_over_saturation" class="result"></span>%)
 					</li>
+					<li>
+						<label>Bias Saturation (Over):</label>
+						<span class="<?PHP echo($prefix); ?>_post_over_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_over_max_distance" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_post_over_bias_saturation" class="result"></span>%)
+					</li>
 					<li class="useless">
 						<label>Under:</label>
 						<span class="<?PHP echo($prefix); ?>_post_under" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
@@ -385,6 +409,11 @@
 						<label>Under Saturation:</label>
 						<span class="<?PHP echo($prefix); ?>_post_under" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_under_max" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_post_under_saturation" class="result"></span>%)
+					</li>
+					<li>
+						<label>Bias Saturation (Under):</label>
+						<span class="<?PHP echo($prefix); ?>_post_under_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_under_max_distance" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_post_under_bias_saturation" class="result"></span>%)
 					</li>
 					<li>
 						<label>Exact:</label>
