@@ -98,30 +98,54 @@
 										max_distance: 0,
 										pre_total_distance: 0, // the total number of units deviated
 										pre_over_count: 0, 
+										pre_over_distance: 0,
+										pre_over_max_distance: 0,
 										pre_under_count: 0, 
+										pre_under_distance: 0,
+										pre_under_max_distance: 0,
 										pre_exact_count: 0, 
-										pre_over_percent: function(){return this.pre_over_count / this.total;}, 
-										pre_under_percent: function(){return this.pre_under_count / this.total;}, 
-										pre_exact_percent: function(){return this.pre_exact_count / this.total;}, 
-										pre_accuracy_ratio: function(){return this.pre_total_distance / this.max_distance;},
+										pre_over_percent: function(){return Math.round(this.pre_over_count / this.total * 100);}, 
+										pre_over_average_distance: function(){return Math.round(this.pre_over_distance / this.pre_over_count * 100) / 100;}, 
+										pre_under_percent: function(){return Math.round(this.pre_under_count / this.total * 100);}, 
+										pre_under_average_distance: function(){return Math.round(this.pre_under_distance / this.pre_under_count * 100) / 100;}, 
+										pre_exact_percent: function(){return Math.round(this.pre_exact_count / this.total * 100);}, 
+										pre_accuracy_ratio: function(){return Math.round(this.pre_total_distance / this.max_distance * 100) / 100;},
 										post_total_distance: 0,
 										post_over_count: 0,
+										post_over_distance: 0,
+										post_over_max_distance: 0,
 										post_under_count: 0,
+										post_under_distance: 0,
+										post_under_max_distance: 0,
 										post_exact_count: 0,
-										post_over_percent: function(){return this.post_over_count / this.total;}, 
-										post_under_percent: function(){return this.post_under_count / this.total;}, 
-										post_exact_percent: function(){return this.post_exact_count / this.total;}, 
-										post_accuracy_ratio: function(){return this.post_total_distance / this.max_distance;},
+										post_over_percent: function(){return Math.round(this.post_over_count / this.total * 100);}, 
+										post_over_average_distance: function(){return Math.round(this.post_over_distance / this.post_over_count * 100) / 100;}, 
+										post_under_percent: function(){return Math.round(this.post_under_count / this.total * 100);}, 
+										post_under_average_distance: function(){return Math.round(this.post_under_distance / this.post_under_count * 100) / 100;}, 
+										post_exact_percent: function(){return Math.round(this.post_exact_count / this.total * 100);}, 
+										post_accuracy_ratio: function(){return Math.round(this.post_total_distance / this.max_distance * 100) / 100;},
 										max_drift: 0, // the most a result could drift
 										total_drift: 0,
+										perfect_drift: 0,
 										good_drift: 0,
+										good_drift_possible: 0,
+										over_flops: 0,
+										under_flops: 0,
 										bad_drift: 0,
+										bad_drift_possible: 0,
 										neutral_drift: 0,
-										drift_ratio: function(){return this.total_drift / this.max_drift},
-										drift_accuracy_ratio: function(){return this.total_drift / this.max_distance}, 
-										good_drift_percent: function(){return this.good_drift / this.total;}, 
-										bad_drift_percent: function(){return this.bad_drift / this.total;}, 
-										neutral_drift_percent: function(){return this.neutral_drift / this.total;}
+										neutral_drift_good: 0,
+										neutral_drift_bad: 0,
+										good_drift_ratio: function(){return Math.round(this.good_drift / this.good_drift_possible * 100);},
+										bad_drift_ratio: function(){return Math.round(this.bad_drift / this.bad_drift_possible * 100);}, 
+										perfect_drift_percent: function(){return Math.round(this.perfect_drift / this.total * 100);}, 
+										good_drift_percent: function(){return Math.round(this.good_drift / this.total * 100);}, 
+										bad_drift_percent: function(){return Math.round(this.bad_drift / this.total * 100);}, 
+										over_flop_percent: function(){return Math.round(this.over_flops / this.total * 100);}, 
+										under_flop_percent: function(){return Math.round(this.under_flops / this.total * 100);}, 
+										neutral_drift_percent: function(){return Math.round(this.neutral_drift / this.total * 100);},
+										neutral_drift_good_percent: function(){return Math.round(this.neutral_drift_good / this.total * 100);},
+										neutral_drift_bad_percent: function(){return Math.round(this.neutral_drift_bad / this.total * 100);}
 									};
 								}
 								
@@ -131,19 +155,42 @@
 								treatments[treatment].pre_over_count += (pre > real)?1:0;
 								treatments[treatment].pre_under_count += (pre < real)?1:0;
 								treatments[treatment].pre_exact_count += (pre == real)?1:0;
+								if(pre > real) {
+									treatments[treatment].pre_over_distance += pre - real;
+									treatments[treatment].pre_over_max_distance += 5 - real;
+								}
+								if(pre < real) {
+									treatments[treatment].pre_under_distance += real - pre;
+									treatments[treatment].pre_under_max_distance += real - 1;
+								}
 								treatments[treatment].post_total_distance += Math.abs(post - real);
 								treatments[treatment].post_over_count += (post > real)?1:0;
 								treatments[treatment].post_under_count += (post < real)?1:0;
 								treatments[treatment].post_exact_count += (post == real)?1:0;
+								if(post > real) {
+									treatments[treatment].post_over_distance += post - real;
+									treatments[treatment].post_over_max_distance += 5 - real;
+								}
+								if(post < real) {
+									treatments[treatment].post_under_distance += real - post;
+									treatments[treatment].post_under_max_distance += real - 1;
+								}
 								treatments[treatment].max_drift += Math.max(Math.abs(pre - 5), Math.abs(pre - 1));
 								treatments[treatment].total_drift += Math.abs(pre - post);
-								treatments[treatment].good_drift += (Math.abs(pre - real) > Math.abs(post - real))?1:0;
-								treatments[treatment].bad_drift += (Math.abs(pre - real) < Math.abs(post - real))?1:0;
-								treatments[treatment].neutral_drift += (Math.abs(pre - real) == Math.abs(post - real))?1:0;
+								treatments[treatment].perfect_drift += (pre != real && post == real)?1:0;
+								treatments[treatment].good_drift += ((Math.abs(pre-real) > Math.abs(post-real)) && ((pre < real && pre < post) || (pre > real && pre > post)))?1:0;
+								treatments[treatment].over_flops += ((Math.abs(pre-real) <= Math.abs(post-real)) && (pre < real && pre < post))?1:0;
+								treatments[treatment].under_flops += ((Math.abs(pre-real) <= Math.abs(post-real)) && (pre > real && pre > post))?1:0;
+								treatments[treatment].good_drift_possible += (pre != real )?1:0;
+								treatments[treatment].bad_drift += ((pre <= real && pre > post) || (pre >= real && pre < post))?1:0;
+								treatments[treatment].bad_drift_possible += (pre == real || (pre < real && pre != 1) || (pre > real && pre != 5))?1:0;
+								treatments[treatment].neutral_drift += (pre==post)?1:0;
+								treatments[treatment].neutral_drift_good += ((pre==post)&&(pre==real))?1:0;
+								treatments[treatment].neutral_drift_bad += ((pre==post)&&(pre!=real))?1:0;
 								treatments[treatment].max_drift += Math.max(Math.abs(pre - 5), Math.abs(pre - 1));
 							}
 						}
-					render();
+						render();
 					}
 				});
 			});
@@ -180,36 +227,57 @@
 						?>
 						$(".<?PHP echo($prefix); ?>_pre_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_total_distance);
 						$(".<?PHP echo($prefix); ?>_max_distance").text(treatments["<?PHP echo($prefix); ?>"].max_distance);
-						$(".<?PHP echo($prefix); ?>_pre_accuracy_ratio").text(Math.round(treatments["<?PHP echo($prefix); ?>"].pre_accuracy_ratio() * 100,2) / 100);
+						$(".<?PHP echo($prefix); ?>_pre_accuracy_ratio").text(treatments["<?PHP echo($prefix); ?>"].pre_accuracy_ratio());
 						$(".<?PHP echo($prefix); ?>_pre_over").text(treatments["<?PHP echo($prefix); ?>"].pre_over_count);
+						$(".<?PHP echo($prefix); ?>_pre_over_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_over_distance);
+						$(".<?PHP echo($prefix); ?>_pre_over_max_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_over_max_distance);
+						$(".<?PHP echo($prefix); ?>_pre_over_average_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_over_average_distance());
 						$(".<?PHP echo($prefix); ?>_pre_under").text(treatments["<?PHP echo($prefix); ?>"].pre_under_count);
+						$(".<?PHP echo($prefix); ?>_pre_under_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_under_distance);
+						$(".<?PHP echo($prefix); ?>_pre_under_max_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_under_max_distance);
+						$(".<?PHP echo($prefix); ?>_pre_under_average_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_under_average_distance());
 						$(".<?PHP echo($prefix); ?>_pre_exact").text(treatments["<?PHP echo($prefix); ?>"].pre_exact_count);
 						$(".<?PHP echo($prefix); ?>_post_distance").text(treatments["<?PHP echo($prefix); ?>"].post_total_distance);
-						$(".<?PHP echo($prefix); ?>_post_accuracy_ratio").text(Math.round(treatments["<?PHP echo($prefix); ?>"].post_accuracy_ratio() * 100,2) / 100);
+						$(".<?PHP echo($prefix); ?>_post_accuracy_ratio").text(treatments["<?PHP echo($prefix); ?>"].post_accuracy_ratio());
 						$(".<?PHP echo($prefix); ?>_post_over").text(treatments["<?PHP echo($prefix); ?>"].post_over_count);
+						$(".<?PHP echo($prefix); ?>_post_over_distance").text(treatments["<?PHP echo($prefix); ?>"].post_over_distance);
+						$(".<?PHP echo($prefix); ?>_post_over_max_distance").text(treatments["<?PHP echo($prefix); ?>"].post_over_max_distance);
+						$(".<?PHP echo($prefix); ?>_post_over_average_distance").text(treatments["<?PHP echo($prefix); ?>"].post_over_average_distance());
 						$(".<?PHP echo($prefix); ?>_post_under").text(treatments["<?PHP echo($prefix); ?>"].post_under_count);
+						$(".<?PHP echo($prefix); ?>_post_under_distance").text(treatments["<?PHP echo($prefix); ?>"].post_under_distance);
+						$(".<?PHP echo($prefix); ?>_post_under_max_distance").text(treatments["<?PHP echo($prefix); ?>"].post_under_max_distance);
+						$(".<?PHP echo($prefix); ?>_post_under_average_distance").text(treatments["<?PHP echo($prefix); ?>"].post_under_average_distance());
 						$(".<?PHP echo($prefix); ?>_post_exact").text(treatments["<?PHP echo($prefix); ?>"].post_exact_count);
-						$(".<?PHP echo($prefix); ?>_pre_over_percent").text(Math.round(treatments["<?PHP echo($prefix); ?>"].pre_over_percent() * 100,2));
-						$(".<?PHP echo($prefix); ?>_pre_under_percent").text(Math.round(treatments["<?PHP echo($prefix); ?>"].pre_under_percent() * 100,2));
-						$(".<?PHP echo($prefix); ?>_pre_exact_percent").text(Math.round(treatments["<?PHP echo($prefix); ?>"].pre_exact_percent() * 100,2));
-						$(".<?PHP echo($prefix); ?>_post_over_percent").text(Math.round(treatments["<?PHP echo($prefix); ?>"].post_over_percent() * 100,2));
-						$(".<?PHP echo($prefix); ?>_post_under_percent").text(Math.round(treatments["<?PHP echo($prefix); ?>"].post_under_percent() * 100,2));
-						$(".<?PHP echo($prefix); ?>_post_exact_percent").text(Math.round(treatments["<?PHP echo($prefix); ?>"].post_exact_percent() * 100,2));
+						$(".<?PHP echo($prefix); ?>_pre_over_percent").text(treatments["<?PHP echo($prefix); ?>"].pre_over_percent());
+						$(".<?PHP echo($prefix); ?>_pre_under_percent").text(treatments["<?PHP echo($prefix); ?>"].pre_under_percent());
+						$(".<?PHP echo($prefix); ?>_pre_exact_percent").text(treatments["<?PHP echo($prefix); ?>"].pre_exact_percent());
+						$(".<?PHP echo($prefix); ?>_post_over_percent").text(treatments["<?PHP echo($prefix); ?>"].post_over_percent());
+						$(".<?PHP echo($prefix); ?>_post_under_percent").text(treatments["<?PHP echo($prefix); ?>"].post_under_percent());
+						$(".<?PHP echo($prefix); ?>_post_exact_percent").text(treatments["<?PHP echo($prefix); ?>"].post_exact_percent());
 						$(".<?PHP echo($prefix); ?>_total").text(treatments["<?PHP echo($prefix); ?>"].total);
-						$(".<?PHP echo($prefix); ?>_total_drift").text(treatments["<?PHP echo($prefix); ?>"].total_drift);
-						$(".<?PHP echo($prefix); ?>_drift_accuracy_ratio").text(Math.round(treatments["<?PHP echo($prefix); ?>"].drift_accuracy_ratio() * 100,2) / 100);
-						$(".<?PHP echo($prefix); ?>_max_drift").text(treatments["<?PHP echo($prefix); ?>"].max_drift);
-						$(".<?PHP echo($prefix); ?>_drift_ratio").text(Math.round(treatments["<?PHP echo($prefix); ?>"].drift_ratio() * 100,2) / 100);
+						$(".<?PHP echo($prefix); ?>_perfect_drift").text(treatments["<?PHP echo($prefix); ?>"].perfect_drift);
 						$(".<?PHP echo($prefix); ?>_good_drift").text(treatments["<?PHP echo($prefix); ?>"].good_drift);
+						$(".<?PHP echo($prefix); ?>_good_drift_possible").text(treatments["<?PHP echo($prefix); ?>"].good_drift_possible);
+						$(".<?PHP echo($prefix); ?>_good_drift_ratio").text(treatments["<?PHP echo($prefix); ?>"].good_drift_ratio());
+						$(".<?PHP echo($prefix); ?>_over_flops").text(treatments["<?PHP echo($prefix); ?>"].over_flops);
+						$(".<?PHP echo($prefix); ?>_over_flop_percent").text(treatments["<?PHP echo($prefix); ?>"].over_flop_percent());
+						$(".<?PHP echo($prefix); ?>_under_flops").text(treatments["<?PHP echo($prefix); ?>"].under_flops);
+						$(".<?PHP echo($prefix); ?>_under_flop_percent").text(treatments["<?PHP echo($prefix); ?>"].under_flop_percent());
 						$(".<?PHP echo($prefix); ?>_bad_drift").text(treatments["<?PHP echo($prefix); ?>"].bad_drift);
+						$(".<?PHP echo($prefix); ?>_bad_drift_possible").text(treatments["<?PHP echo($prefix); ?>"].bad_drift_possible);
+						$(".<?PHP echo($prefix); ?>_bad_drift_ratio").text(treatments["<?PHP echo($prefix); ?>"].bad_drift_ratio());
 						$(".<?PHP echo($prefix); ?>_neutral_drift").text(treatments["<?PHP echo($prefix); ?>"].neutral_drift);
-						$(".<?PHP echo($prefix); ?>_good_drift_percent").text(Math.round(treatments["<?PHP echo($prefix); ?>"].good_drift_percent() * 100,2));
-						$(".<?PHP echo($prefix); ?>_bad_drift_percent").text(Math.round(treatments["<?PHP echo($prefix); ?>"].bad_drift_percent() * 100,2));
-						$(".<?PHP echo($prefix); ?>_neutral_drift_percent").text(Math.round(treatments["<?PHP echo($prefix); ?>"].neutral_drift_percent() * 100,2));
+						$(".<?PHP echo($prefix); ?>_neutral_drift_good").text(treatments["<?PHP echo($prefix); ?>"].neutral_drift_good);
+						$(".<?PHP echo($prefix); ?>_neutral_drift_bad").text(treatments["<?PHP echo($prefix); ?>"].neutral_drift_bad);
+						$(".<?PHP echo($prefix); ?>_perfect_drift_percent").text(treatments["<?PHP echo($prefix); ?>"].perfect_drift_percent());
+						$(".<?PHP echo($prefix); ?>_good_drift_percent").text(treatments["<?PHP echo($prefix); ?>"].good_drift_percent());
+						$(".<?PHP echo($prefix); ?>_bad_drift_percent").text(treatments["<?PHP echo($prefix); ?>"].bad_drift_percent());
+						$(".<?PHP echo($prefix); ?>_neutral_drift_percent").text(treatments["<?PHP echo($prefix); ?>"].neutral_drift_percent());
+						$(".<?PHP echo($prefix); ?>_neutral_drift_good_percent").text(treatments["<?PHP echo($prefix); ?>"].neutral_drift_good_percent());
+						$(".<?PHP echo($prefix); ?>_neutral_drift_bad_percent").text(treatments["<?PHP echo($prefix); ?>"].neutral_drift_bad_percent());
 						<?PHP
 					}
 				?>
-				
 			}
 			
 		</script>
@@ -224,9 +292,9 @@
 				<ul class="wide">
 					<li><label>Total:</label><span class="total_participants"></span></li>
 					<li><label>Omitted:</label><span class="omitted_participants"></span> (<span class="omit_percent"></span>%)</li>
-					<li><label>Pre-Goggles Bail:</label><span class="pre_bail"></span> (<span class="pre_percent"></span>%)</li>
-					<li><label>Mid-Goggles Bail:</label><span class="mid_bail"></span> (<span class="mid_percent"></span>%)</li>
-					<li><label>Post-Goggles Bail:</label><span class="post_bail"></span> (<span class="post_percent"></span>%)</li>
+					<li><label>Pre-Goggles:</label><span class="pre_bail"></span> (<span class="pre_percent"></span>%)</li>
+					<li><label>Mid-Goggles:</label><span class="mid_bail"></span> (<span class="mid_percent"></span>%)</li>
+					<li><label>Post-Goggles:</label><span class="post_bail"></span> (<span class="post_percent"></span>%)</li>
 					<li><label>Complete:</label><span class="complete"></span> (<span class="complete_percent"></span>%)</li>
 				</ul>
 			</div>
@@ -244,7 +312,6 @@
 			</div>
 			<h2>Results</h2>
 			<?PHP
-			
 				function results($prefix) {
 					?>
 			<div class="results">
@@ -261,9 +328,19 @@
 						(<span class="<?PHP echo($prefix); ?>_pre_over_percent" class="result"></span>%)
 					</li>
 					<li>
+						<label>Over Average:</label>
+						<span class="<?PHP echo($prefix); ?>_pre_over_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_pre_over" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_pre_over_average_distance" class="result"></span>)
+					</li>
+					<li>
 						<label>Under:</label>
 						<span class="<?PHP echo($prefix); ?>_pre_under" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_pre_under_percent" class="result"></span>%)
+					</li>
+					<li>
+						<label>Under Average:</label>
+						<span class="<?PHP echo($prefix); ?>_pre_under_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_pre_under" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_pre_under_average_distance" class="result"></span>)
 					</li>
 					<li>
 						<label>Exact:</label>
@@ -283,9 +360,19 @@
 						(<span class="<?PHP echo($prefix); ?>_post_over_percent" class="result"></span>%)
 					</li>
 					<li>
+						<label>Over Average:</label>
+						<span class="<?PHP echo($prefix); ?>_post_over_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_over" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_post_over_average_distance" class="result"></span>)
+					</li>
+					<li>
 						<label>Under:</label>
 						<span class="<?PHP echo($prefix); ?>_post_under" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_post_under_percent" class="result"></span>%)
+					</li>
+					<li>
+						<label>Under Average:</label>
+						<span class="<?PHP echo($prefix); ?>_post_under_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_post_under" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_post_under_average_distance" class="result"></span>)
 					</li>
 					<li>
 						<label>Exact:</label>
@@ -296,12 +383,9 @@
 				<h5>Drift</h5>
 				<ul>
 					<li>
-						<label>Accuracy:</label>
-						<span class="<?PHP echo($prefix); ?>_total_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_max_distance" class="result"></span> (<span class="<?PHP echo($prefix); ?>_drift_accuracy_ratio" class="result"></span>)
-					</li>
-					<li>
-						<label>Absolute:</label>
-						<span class="<?PHP echo($prefix); ?>_total_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_max_drift" class="result"></span> (<span class="<?PHP echo($prefix); ?>_drift_ratio" class="result"></span>)
+						<label>Perfect:</label>
+						<span class="<?PHP echo($prefix); ?>_perfect_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_perfect_drift_percent" class="result"></span>%)
 					</li>
 					<li>
 						<label>Good:</label>
@@ -309,14 +393,44 @@
 						(<span class="<?PHP echo($prefix); ?>_good_drift_percent" class="result"></span>%)
 					</li>
 					<li>
+						<label>Good Saturation:</label>
+						<span class="<?PHP echo($prefix); ?>_good_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_good_drift_possible" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_good_drift_ratio" class="result"></span>%)
+					</li>
+					<li>
+						<label>Over Flops:</label>
+						<span class="<?PHP echo($prefix); ?>_over_flops" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_over_flop_percent" class="result"></span>%)
+					</li>
+					<li>
+						<label>Under Flops:</label>
+						<span class="<?PHP echo($prefix); ?>_under_flops" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_under_flop_percent" class="result"></span>%)
+					</li>
+					<li>
 						<label>Bad:</label>
 						<span class="<?PHP echo($prefix); ?>_bad_drift" class="result"></span>/ <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_bad_drift_percent" class="result"></span>%)
 					</li>
 					<li>
+						<label>Bad Saturation:</label>
+						<span class="<?PHP echo($prefix); ?>_bad_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_bad_drift_possible" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_bad_drift_ratio" class="result"></span>%)
+					</li>
+					<li>
 						<label>Neutral:</label>
-						<span class="<?PHP echo($prefix); ?>_neutral_drift" class="result"></span>/ <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						<span class="<?PHP echo($prefix); ?>_neutral_drift" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_neutral_drift_percent" class="result"></span>%)
+					</li>
+					<li>
+						<label>Neutral Good:</label>
+						<span class="<?PHP echo($prefix); ?>_neutral_drift_good" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_neutral_drift_good_percent" class="result"></span>%)
+					</li>
+					<li>
+						<label>Neutral Bad:</label>
+						<span class="<?PHP echo($prefix); ?>_neutral_drift_bad" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_neutral_drift_bad_percent" class="result"></span>%)
 					</li>
 				</ul>
 			</div>
