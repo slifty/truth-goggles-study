@@ -7,6 +7,7 @@
 	
 	$participants = Participant::getAllObjects();
 	$participant_blacklist = array(50, 89); // The responses that are known to be invalid
+	$claim_blacklist = array(14); // The claims that are known to be invalid
 	$claim_objects = Claim::getAllObjects();
 	$article_objects = Article::getAllObjects();
 	
@@ -44,6 +45,8 @@
 		$participant_responses[$participant->getItemID()] = $responses;
 		
 		foreach($claim_objects as $claim) {
+			if(in_array($claim->getItemID(), $claim_blacklist))
+				continue;
 			$claims[$claim->getItemID()] = array(
 				"claim" => $claim,
 				"response_1" => "",
@@ -52,11 +55,17 @@
 			);
 		}
 		
-		foreach($claim_order_1 as $x => $claim_id)
+		foreach($claim_order_1 as $x => $claim_id) {
+			if(in_array($claim_id, $claim_blacklist))
+				continue;
 			$claims[$claim_id]['response_1'] = isset($responses['2_'.($x + 1)])?$responses['2_'.($x + 1)]->getContent():"";
+		}
 		
-		foreach($claim_order_2 as $x => $claim_id)
+		foreach($claim_order_2 as $x => $claim_id) {
+			if(in_array($claim_id, $claim_blacklist))
+				continue;
 			$claims[$claim_id]['response_2'] = isset($responses['6_'.($x + 1)])?$responses['6_'.($x + 1)]->getContent():"";
+		}
 		
 		foreach($claims as $claim_id => $claim) {
 			if($claim["claim"]->getArticleID() != 0) {

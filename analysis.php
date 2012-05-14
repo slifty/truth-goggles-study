@@ -96,7 +96,8 @@
 									treatments[treatment] = {
 										total: 0,
 										max_distance: 0,
-										pre_total_distance: 0, // the total number of units deviated
+										pre_inaccuracy: 0,
+										pre_total_distance: 0,
 										pre_over_max: 0, 
 										pre_over_count: 0, 
 										pre_over_distance: 0,
@@ -106,6 +107,9 @@
 										pre_under_distance: 0,
 										pre_under_max_distance: 0,
 										pre_exact_count: 0, 
+										pre_average_inaccuracy: function(){return Math.round(this.pre_inaccuracy / this.total * 100) / 100;}, 
+										pre_average_over: function(){return Math.round(this.pre_over_distance / this.pre_over_count * 100);}, 
+										pre_average_under: function(){return Math.round(this.pre_under_distance / this.pre_under_count * 100);}, 
 										pre_over_percent: function(){return Math.round(this.pre_over_count / this.total * 100);}, 
 										pre_over_saturation: function(){return Math.round(this.pre_over_count / this.pre_over_max * 100);}, 
 										pre_under_percent: function(){return Math.round(this.pre_under_count / this.total * 100);}, 
@@ -114,6 +118,7 @@
 										pre_inaccuracy_saturation: function(){return Math.round(this.pre_total_distance / this.max_distance * 100);},
 										pre_over_bias_saturation: function(){return Math.round(this.pre_over_distance / this.pre_over_max_distance * 100);},
 										pre_under_bias_saturation: function(){return Math.round(this.pre_under_distance / this.pre_under_max_distance * 100);},
+										post_inaccuracy: 0,
 										post_total_distance: 0,
 										post_over_max: 0,
 										post_over_count: 0,
@@ -124,6 +129,9 @@
 										post_under_distance: 0,
 										post_under_max_distance: 0,
 										post_exact_count: 0,
+										post_average_inaccuracy: function(){return Math.round(this.post_inaccuracy / this.total * 100) / 100;}, 
+										post_average_over: function(){return Math.round(this.post_over_distance / this.post_over_count * 100);}, 
+										post_average_under: function(){return Math.round(this.post_under_distance / this.post_under_count * 100);}, 
 										post_over_percent: function(){return Math.round(this.post_over_count / this.total * 100);}, 
 										post_over_saturation: function(){return Math.round(this.post_over_count / this.post_over_max * 100);}, 
 										post_under_percent: function(){return Math.round(this.post_under_count / this.total * 100);}, 
@@ -159,6 +167,7 @@
 								
 								treatments[treatment].total += 1;
 								treatments[treatment].max_distance += Math.max(Math.abs(real - 5), Math.abs(real - 1));
+								treatments[treatment].pre_inaccuracy += Math.abs(pre - real);
 								treatments[treatment].pre_total_distance += Math.abs(pre - real);
 								treatments[treatment].pre_over_count += (pre > real)?1:0;
 								treatments[treatment].pre_over_max += (real < 5)?1:0;
@@ -173,6 +182,7 @@
 									treatments[treatment].pre_under_distance += real - pre;
 									treatments[treatment].pre_under_max_distance += real - 1;
 								}
+								treatments[treatment].post_inaccuracy += Math.abs(post - real);
 								treatments[treatment].post_total_distance += Math.abs(post - real);
 								treatments[treatment].post_over_count += (post > real)?1:0;
 								treatments[treatment].post_over_max += (real < 5)?1:0;
@@ -237,9 +247,11 @@
 					$prefix_list = array("control","none","safe","goggles","highlight");
 					foreach($prefix_list as $prefix) {
 						?>
-						$(".<?PHP echo($prefix); ?>_pre_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_total_distance);
 						$(".<?PHP echo($prefix); ?>_max_distance").text(treatments["<?PHP echo($prefix); ?>"].max_distance);
+						$(".<?PHP echo($prefix); ?>_pre_inaccuracy").text(treatments["<?PHP echo($prefix); ?>"].pre_inaccuracy);
+						$(".<?PHP echo($prefix); ?>_pre_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_total_distance);
 						$(".<?PHP echo($prefix); ?>_pre_inaccuracy_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_inaccuracy_saturation());
+						$(".<?PHP echo($prefix); ?>_pre_average_inaccuracy").text(treatments["<?PHP echo($prefix); ?>"].pre_average_inaccuracy());
 						$(".<?PHP echo($prefix); ?>_pre_over_bias_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_over_bias_saturation());
 						$(".<?PHP echo($prefix); ?>_pre_under_bias_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_under_bias_saturation());
 						$(".<?PHP echo($prefix); ?>_pre_over").text(treatments["<?PHP echo($prefix); ?>"].pre_over_count);
@@ -253,8 +265,10 @@
 						$(".<?PHP echo($prefix); ?>_pre_under_max_distance").text(treatments["<?PHP echo($prefix); ?>"].pre_under_max_distance);
 						$(".<?PHP echo($prefix); ?>_pre_under_saturation").text(treatments["<?PHP echo($prefix); ?>"].pre_under_saturation());
 						$(".<?PHP echo($prefix); ?>_pre_exact").text(treatments["<?PHP echo($prefix); ?>"].pre_exact_count);
+						$(".<?PHP echo($prefix); ?>_post_inaccuracy").text(treatments["<?PHP echo($prefix); ?>"].post_inaccuracy);
 						$(".<?PHP echo($prefix); ?>_post_distance").text(treatments["<?PHP echo($prefix); ?>"].post_total_distance);
 						$(".<?PHP echo($prefix); ?>_post_inaccuracy_saturation").text(treatments["<?PHP echo($prefix); ?>"].post_inaccuracy_saturation());
+						$(".<?PHP echo($prefix); ?>_post_average_inaccuracy").text(treatments["<?PHP echo($prefix); ?>"].post_average_inaccuracy());
 						$(".<?PHP echo($prefix); ?>_post_over_bias_saturation").text(treatments["<?PHP echo($prefix); ?>"].post_over_bias_saturation());
 						$(".<?PHP echo($prefix); ?>_post_under_bias_saturation").text(treatments["<?PHP echo($prefix); ?>"].post_under_bias_saturation());
 						$(".<?PHP echo($prefix); ?>_post_over").text(treatments["<?PHP echo($prefix); ?>"].post_over_count);
@@ -342,6 +356,11 @@
 						<span class="<?PHP echo($prefix); ?>_pre_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_max_distance" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_pre_inaccuracy_saturation" class="result"></span>%)
 					</li>
+					<li>
+						<label>Average Inaccuracy:</label>
+						<span class="<?PHP echo($prefix); ?>_pre_inaccuracy" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_pre_average_inaccuracy" class="result"></span>)
+					</li>
 					<li class="useless">
 						<label>Over:</label>
 						<span class="<?PHP echo($prefix); ?>_pre_over" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
@@ -384,6 +403,11 @@
 						<label>Inaccuracy Saturation:</label>
 						<span class="<?PHP echo($prefix); ?>_post_distance" class="result"></span> / <span class="<?PHP echo($prefix); ?>_max_distance" class="result"></span>
 						(<span class="<?PHP echo($prefix); ?>_post_inaccuracy_saturation" class="result"></span>%)
+					</li>
+					<li>
+						<label>Average Inaccuracy:</label>
+						<span class="<?PHP echo($prefix); ?>_post_inaccuracy" class="result"></span> / <span class="<?PHP echo($prefix); ?>_total" class="result"></span>
+						(<span class="<?PHP echo($prefix); ?>_post_average_inaccuracy" class="result"></span>)
 					</li>
 					<li class="useless">
 						<label>Over:</label>
