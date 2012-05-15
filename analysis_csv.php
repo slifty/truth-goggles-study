@@ -203,7 +203,7 @@
 			if($claim['response_1'] != 0 && $claim['response_2'] != 0) {
 				$is_intended = ((((int)$claim['response_1'] < (int)$claim['claim']->getVerdict() && (int)$claim['response_2'] > (int)$claim['response_1'])
 							||  ((int)$claim['response_1'] > (int)$claim['claim']->getVerdict() && (int)$claim['response_2'] < (int)$claim['response_1']))
-							&&  abs($claim['response_1'] - $claim['claim']->getVerdict()) < abs($claim['response_2'] - $claim['claim']->getVerdict())));
+							&&  abs($claim['response_1'] - $claim['claim']->getVerdict()) < abs($claim['response_2'] - $claim['claim']->getVerdict()));
 			}
 			
 			$d .= "".$participant->getItemID().","; // uid
