@@ -49,6 +49,13 @@
 	$d .= "isIntended,";
 	$d .= "\n";
 	
+	$interface_selection = array(
+		"none" => 0,
+		"highlight" => 0,
+		"goggles" => 0,
+		"safe" => 0
+	);
+	
 	foreach($participants as $participant) {
 		if(in_array($participant->getItemID(), $participant_blacklist))
 			continue;
@@ -56,6 +63,8 @@
 			continue;
 		if($participant->getStage() != 8)
 			continue;
+		
+		$participant_counter++;
 		
 		$events = Event::getObjectsByParticipantID($participant->getItemID());
 		$treatment_order = explode(',', $participant->getTreatmentOrder());
@@ -70,6 +79,8 @@
 			$responses[$response->getQuestionID()] = $response;
 		
 		$participant_responses[$participant->getItemID()] = $responses;
+		
+		$interface_selection[$responses['q_interface']->getContent()]++;
 		
 		foreach($claim_objects as $claim) {
 			if(in_array($claim->getItemID(), $claim_blacklist))
@@ -243,4 +254,10 @@
 	$f_data = fopen($f_name,'w');
 	fwrite($f_data, $d);
 	fclose($f_data);
+	
+	echo("Participants: ".$participant_counter);
+	echo("<br/ >None: ".$interface_selection["none"]);
+	echo("<br/ >Highlight: ".$interface_selection["highlight"]);
+	echo("<br/ >Goggles: ".$interface_selection["goggles"]);
+	echo("<br/ >Safe: ".$interface_selection["safe"]);
 ?>
