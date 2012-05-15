@@ -22,7 +22,10 @@
 	
 	$d = "";
 	$d .= "uid,";
-	$d .="treatment,";
+	$d .= "treatment,";
+	$d .= "claimVerdict,";
+	$d .= "preRating,";
+	$d .= "postRating,";
 	$d .= "inaccuracySaturationPre,";
 	$d .= "inaccuracySaturationPost,";
 	$d .= "inaccuracyDistancePre,";
@@ -184,6 +187,9 @@
 			
 			$d .= "".$participant->getItemID().","; // uid
 			$d .= "".$claim['treatment'].","; // treatment
+			$d .= "".($claim['claim']->getVerdict() - 3).","; // verdict
+			$d .= "".($claim['response_1'] - 3).","; // pre Rating
+			$d .= "".($claim['response_2'] - 3).","; // post Rating
 			$d .= "".$inaccuracy_saturation_pre.","; // Inaccuracy Saturation Pre
 			$d .= "".$inaccuracy_saturation_post.","; // Inaccuracy Saturation Post
 			$d .= "".$inaccuracy_distance_pre.","; // Inaccuracy Distance Pre
