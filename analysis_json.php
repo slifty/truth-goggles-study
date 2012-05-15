@@ -19,8 +19,6 @@
 	
 	?>
 {
- "total": <?PHP echo(sizeof($participants)); ?>,
- "omitted": <?PHP echo(sizeof($participant_blacklist)); ?>,
  "participants": [
 	<?PHP
 	$participant_responses = array();
@@ -109,5 +107,7 @@
 		<?PHP
 	}
 	?>
- ]
+ ],
+ "total": <?PHP echo($participant_counter); ?>,
+ "omitted": <?PHP echo(sizeof($participant_blacklist)); ?>
 }
