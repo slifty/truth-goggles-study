@@ -32,6 +32,8 @@
 	$d .= "inaccuracyDistancePost,";
 	$d .= "inaccuracyValuePre,";
 	$d .= "inaccuracyValuePost,";
+	$d .= "biasSaturationPre,";
+	$d .= "biasSaturationPost,";
 	$d .= "isOverPre,";
 	$d .= "isOverPost,";
 	$d .= "isOverPossible,";
@@ -106,6 +108,9 @@
 				$more_count++;
 	
 		foreach($claims as $claim) {
+			if($claim['response_1'] == 0 || $claim['response_2'] == 0)
+				continue
+			
 			$inaccuracy_saturation_pre = "";
 			if($claim['response_1'] != 0) {
 				$num = abs($claim['response_1'] - $claim['claim']->getVerdict());
@@ -135,6 +140,22 @@
 			$inaccuracy_value_post = "";
 			if($claim['response_2'] != 0)
 				$inaccuracy_value_post = (int)$claim['response_2'] - (int)$claim['claim']->getVerdict();
+			
+			$bias_saturation_pre = "";
+			if($claim['response_1'] != 0) {
+				if((int)$claim['claim']->getVerdict() > (int)$claim['response_1'])
+					$bias_saturation_pre = abs((int)$claim['response_1'] - (int)$claim['claim']->getVerdict()) / abs((int)$claim['claim']->getVerdict() - 1);
+				if((int)$claim['claim']->getVerdict() < (int)$claim['response_1'])
+					$bias_saturation_pre = abs((int)$claim['response_1'] - (int)$claim['claim']->getVerdict()) / abs((int)$claim['claim']->getVerdict() - 5);
+			}
+			
+			$bias_saturation_post = "";
+			if($claim['response_2'] != 0) {
+				if((int)$claim['claim']->getVerdict() > (int)$claim['response_2'])
+					$bias_saturation_post = abs((int)$claim['response_2'] - (int)$claim['claim']->getVerdict()) / abs((int)$claim['claim']->getVerdict() - 1);
+				if((int)$claim['claim']->getVerdict() < (int)$claim['response_2'])
+					$bias_saturation_post = abs((int)$claim['response_2'] - (int)$claim['claim']->getVerdict()) / abs((int)$claim['claim']->getVerdict() - 5);
+			}
 			
 			$is_over_pre = "";
 			if($claim['response_1'] != 0)
@@ -196,6 +217,8 @@
 			$d .= "".$inaccuracy_distance_post.","; // Inaccuracy Distance Post
 			$d .= "".$inaccuracy_value_pre.","; // Inaccuracy Value Pre
 			$d .= "".$inaccuracy_value_post.","; // Inaccuracy Value Post
+			$d .= "".$bias_saturation_pre.","; // Bias Saturation Pre
+			$d .= "".$bias_saturation_post.","; // Bias Saturation Post
 			$d .= "".$is_over_pre.","; // isOver Pre
 			$d .= "".$is_over_post.","; // isOver Post
 			$d .= "".$is_over_possible.","; // isOverPossible
