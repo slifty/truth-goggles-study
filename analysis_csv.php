@@ -55,6 +55,10 @@
 		"goggles" => 0,
 		"safe" => 0
 	);
+	$interactions = array(
+		"more" => 0,
+		"click" => 0
+	);
 	
 	foreach($participants as $participant) {
 		if(in_array($participant->getItemID(), $participant_blacklist))
@@ -73,7 +77,6 @@
 		$claim_order_2 = explode(',', $participant->getClaimOrder2());
 		$claim_results = array();
 		$responses = array();
-		$more_count = 0;
 		
 		foreach(Response::getObjectsByParticipantID($participant->getItemID()) as $response)
 			$responses[$response->getQuestionID()] = $response;
@@ -114,10 +117,13 @@
 			}
 		}
 		
-		foreach($events as $event)
+		foreach($events as $event) {
 			if($event->getType() == "more")
-				$more_count++;
-	
+				$interactions["more"]++;
+			if($event->getType() == "open")
+				$interactions["click"]++;
+		}
+		
 		foreach($claims as $claim) {
 			if($claim['response_1'] == 0 || $claim['response_2'] == 0)
 				continue
@@ -260,4 +266,8 @@
 	echo("<br/ >Highlight: ".$interface_selection["highlight"]);
 	echo("<br/ >Goggles: ".$interface_selection["goggles"]);
 	echo("<br/ >Safe: ".$interface_selection["safe"]);
+	
+	
+	echo("<br/ >More clicks: ".$interactions["more"]);
+	echo("<br/ >Claim clicks: ".$interactions["click"]);
 ?>
