@@ -7,6 +7,7 @@
 	
 	$participants = Participant::getAllObjects();
 	$participant_blacklist = array(50, 89); // The responses that are known to be invalid
+	$participant_cutoff = 224; // The id of the final participant
 	$claim_blacklist = array(14); // The claims that are known to be invalid
 	$claim_objects = Claim::getAllObjects();
 	$article_objects = Article::getAllObjects();
@@ -26,6 +27,8 @@
 	$participant_counter = 0;
 	foreach($participants as $participant) {
 		if(in_array($participant->getItemID(), $participant_blacklist))
+			continue;
+		if($participant->getItemID() > $participant_cutoff)
 			continue;
 			
 		echo((++$participant_counter>1)?",":"");
