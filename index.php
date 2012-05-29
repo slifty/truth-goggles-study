@@ -1,5 +1,8 @@
 <?PHP
-	
+	// Study complete!
+	header('Location: over.php');
+	exit();
+		
 	// Check to make sure the browser is supported (isn't Internet Explorer)
 	if(!isset($_SERVER['HTTP_USER_AGENT']) || strpos($_SERVER['HTTP_USER_AGENT'], "MSIE") !== false) {
 		header('Location: unsupported_browser.php');
